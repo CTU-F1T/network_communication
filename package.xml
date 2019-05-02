@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package>
+  <name>network_communication</name>
+  <version>0.0.1</version>
+  <description>
+    This package is used as a way for communicating between two cars via
+    TCP/IP.
+  </description>
+
+  <maintainer email="klapajar@fel.cvut.cz">Jaroslav Klapálek</maintainer>
+
+  <license>TODO</license>
+
+  <author email="klapajar@fel.cvut.cz">Jaroslav Klapálek</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- run_depend libraries -->
+  <run_depend>rospy</run_depend>
+
+  <!-- run_depend message types -->
+</package>
