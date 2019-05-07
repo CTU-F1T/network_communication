@@ -4,7 +4,7 @@
   Description: Launch a server node for network communication.
 -->
 <launch>
-  <arg name="topic" default="/client" doc="Topic for server to subscribe to." />
+  <arg name="topic" default="/server" doc="Topic for server to subscribe to." />
   <arg name="message" default="" doc="Message type for server's messages." />
   <arg name="ip" default="localhost" doc="IP address for server." />
   <arg name="port" default="22222" doc="Port for server." />
