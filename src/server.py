@@ -45,7 +45,7 @@ thread_run = True
 # Functions (Thread)
 ######################
 
-def run_server(ip_address, port):
+def run_server(ip_address, port, buflen):
     global sock
     global thread_run
     global message_class
@@ -70,7 +70,7 @@ def run_server(ip_address, port):
                 rospy.loginfo("Incoming connection from %s:%s." % address)
 
                 while True:
-                    data = connection.recv(128)
+                    data = connection.recv(buflen)
 
                     if not data:
                         break
@@ -93,7 +93,7 @@ def run_server(ip_address, port):
 # Functions
 ######################
 
-def start_node(ip_address, port, topic, message_type = None):
+def start_node(ip_address, port, topic, buflen = 128, message_type = None):
     """Starts a ROS node, registers the callbacks."""
     global thread_run
     global message_class
@@ -129,7 +129,7 @@ def start_node(ip_address, port, topic, message_type = None):
     rospy.logdebug("Creating publisher to topic '%s' with message type '%s'", topic, message_class._type)
 
     # Create server thread
-    t = threading.Thread(target = run_server, args = [ip_address, port])
+    t = threading.Thread(target = run_server, args = [ip_address, port, buflen])
     t.start()
 
     # Function spin() simply keeps python from exiting until this node is stopped.
@@ -144,7 +144,9 @@ if __name__ == '__main__':
     # Slightly ugly, but efficient solution
     if len(args) == 4:
         start_node(args[1], args[2], args[3])
-    elif len(args) > 4:
+    elif len(args) == 5:
         start_node(args[1], args[2], args[3], args[4])
+    elif len(args) > 5:
+        start_node(args[1], args[2], args[3], args[4], args[5])
     else:
-        print >>sys.stderr, "Error during starting up the node. Expected 3 parameters (IP address, port, topic, [message type]), but received %d." % len(args)
+        print >>sys.stderr, "Error during starting up the node. Expected 3 parameters (IP address, port, topic, [buffer length, [message type]]), but received %d." % len(args)
