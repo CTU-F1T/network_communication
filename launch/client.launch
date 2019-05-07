@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!--
+  Author: Jaroslav Klapálek <klapajar@fel.cvut.cz>
+  Description: Launch a client node for network communication.
+-->
+<launch>
+  <arg name="topic" default="/client" doc="Topic for client to subscribe to." />
+  <arg name="message" default="" doc="Message type for client's messages." />
+  <arg name="ip" default="localhost" doc="IP address for client." />
+  <arg name="port" default="22222" doc="Port for client." />
+
+  <node pkg="network_communication" type="client.py" name="$(anon network_communication_client)" args="$(arg ip) $(arg port) $(arg topic) $(arg message)" output="screen" />
+</launch>

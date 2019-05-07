@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!--
+  Author: Jaroslav Klapálek <klapajar@fel.cvut.cz>
+  Description: Launch a node for network communication.
+-->
+<launch>
+  <arg name="run_server" default="false" doc="True if server is supposed to be launched." />
+  <arg name="run_client" default="false" doc="True if client is supposed to be launched." />
+
+  <arg name="server_topic" default="/server" doc="Topic for server to publish to." />
+  <arg name="server_message" default="" doc="Message type for server's messages." />
+  <arg name="server_ip" default="localhost" doc="IP address for server." />
+  <arg name="server_port" default="22222" doc="Port for server." />
+
+  <arg name="client_topic" default="/client" doc="Topic for client to subscribe to." />
+  <arg name="client_message" default="" doc="Message type for client's messages." />
+  <arg name="client_ip" default="localhost" doc="IP address for client." />
+  <arg name="client_port" default="22222" doc="Port for client." />
+
+  <include file="$(find network_communication)/launch/server.launch" if="$(arg run_server)">
+    <arg name="topic" value="$(arg server_topic)" />
+    <arg name="message" value="$(arg server_message)" />
+    <arg name="ip" value="$(arg server_ip)" />
+    <arg name="port" value="$(arg server_port)" />
+  </include>
+
+  <include file="$(find network_communication)/launch/client.launch" if="$(arg run_client)">
+    <arg name="topic" value="$(arg client_topic)" />
+    <arg name="message" value="$(arg client_message)" />
+    <arg name="ip" value="$(arg client_ip)" />
+    <arg name="port" value="$(arg client_port)" />
+  </include>
+</launch>
