@@ -42,35 +42,6 @@ thread_run = True
 
 
 ######################
-# Callbacks
-######################
-
-def callback_obstacles(data):
-    """Convert obstacles from 'obstacle_detector' to message types from 'obstacle_msgs'.
-
-    Arguments:
-    data -- structure received on a /raw_obstacles topic, defined by obstacle_detector.msg/Obstacles
-    """
-    msg = ObstaclesStamped()
-
-    msg.header = data.header
-
-    msg.obstacles = Obstacles()
-
-    msg.obstacles.circles = [ CircleObstacle(
-                                center=circle.center,
-                                radius=circle.true_radius,
-                                velocity=circle.velocity
-                              ) for circle in data.circles ]
-
-    msg.obstacles.segments = [ SegmentObstacle(
-                                [segment.first_point, segment.last_point]
-                               ) for segment in data.segments ]
-
-    pub.publish(msg)
-
-
-######################
 # Functions (Thread)
 ######################
 
