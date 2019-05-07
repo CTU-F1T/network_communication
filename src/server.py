@@ -11,6 +11,9 @@ import sys
 # ROS python package
 import rospy
 
+# ROS topic package
+import rostopic
+
 # Network socket
 import socket
 
@@ -27,7 +30,7 @@ from std_msgs.msg import String
 
 
 # Publishers
-pub = rospy.Publisher("/server", String, queue_size = 1)
+pub = None
 
 
 # Global variables
@@ -71,6 +74,8 @@ def callback_obstacles(data):
 def run_server(ip_address, port):
     global sock
     global thread_run
+    global message_class
+    global pub
 
     # Bind socket to port
     rospy.loginfo("Starting up the server on %s:%s." % (ip_address, port))
@@ -96,7 +101,7 @@ def run_server(ip_address, port):
                     if not data:
                         break
 
-                    msg = String()
+                    msg = message_class()
                     msg.deserialize(data)
                     pub.publish(msg)
             finally:
@@ -112,12 +117,26 @@ def run_server(ip_address, port):
 # Functions
 ######################
 
-def start_node(ip_address, port):
+def start_node(ip_address, port, topic):
     """Starts a ROS node, registers the callbacks."""
     global thread_run
+    global message_class
+    global pub
 
     # Multiple nodes may be running, but only one should operate on each topic
     rospy.init_node("network_communication_server", anonymous = True)
+
+    # Detect message type
+    topic_info = rostopic.get_topic_class(topic)
+
+    # Check if something was received and if class was detected
+    if topic_info and topic_info[0]:
+        # Register a publisher
+        pub = rospy.Publisher(topic, topic_info[0], queue_size = 1)
+        message_class = topic_info[0]
+    else:
+        rospy.logerr("Target topic is not currently active.")
+        return
 
     # Create server thread
     t = threading.Thread(target = run_server, args = [ip_address, port])
@@ -133,7 +152,7 @@ if __name__ == '__main__':
     args = [ a.lower() for a in rospy.myargv(argv = sys.argv) ]
 
     # Slightly ugly, but efficient solution
-    if len(args) > 2:
-        start_node(args[1], args[2])
+    if len(args) > 3:
+        start_node(args[1], args[2], args[3])
     else:
-        print >>sys.stderr, "Error during starting up the node. Expected 2 parameters (IP address, port), but received %d." % len(args)
+        print >>sys.stderr, "Error during starting up the node. Expected 3 parameters (IP address, port, topic), but received %d." % len(args)

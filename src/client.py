@@ -11,6 +11,9 @@ import sys
 # ROS python package
 import rospy
 
+# ROS topic python package
+import rostopic
+
 # Network socket
 import socket
 
@@ -85,15 +88,23 @@ def run_client(ip_address, port):
 # Functions
 ######################
 
-def start_node(ip_address, port):
+def start_node(ip_address, port, topic):
     """Starts a ROS node, registers the callbacks."""
     global thread_run
 
     # Multiple nodes may be running, but only one should operate on each topic
     rospy.init_node("network_communication_client", anonymous = True)
 
-    # Register a callback
-    rospy.Subscriber("/client", String, callback_client)
+    # Detect message type
+    topic_info = rostopic.get_topic_class(topic)
+
+    # Check if something was received and if class was detected
+    if topic_info and topic_info[0]:
+        # Register a callback
+        rospy.Subscriber(topic, topic_info[0], callback_client)
+    else:
+        rospy.logerr("Target topic is not currently active.")
+        return
 
     # Create client thread
     t = threading.Thread(target = run_client, args = [ip_address, port])
@@ -109,7 +120,7 @@ if __name__ == '__main__':
     args = [ a.lower() for a in rospy.myargv(argv = sys.argv) ]
 
     # Slightly ugly, but efficient solution
-    if len(args) > 2:
-        start_node(args[1], args[2])
+    if len(args) > 3:
+        start_node(args[1], args[2], args[3])
     else:
-        print >>sys.stderr, "Error during starting up the node. Expected 2 parameters (IP address, port), but received %d." % len(args)
+        print >>sys.stderr, "Error during starting up the node. Expected 3 parameters (IP address, port, topic), but received %d." % len(args)
