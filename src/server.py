@@ -101,6 +101,8 @@ def run_server(ip_address, port):
                     if not data:
                         break
 
+                    rospy.logdebug("thread: Received data of length %d." % len(data))
+
                     msg = message_class()
                     msg.deserialize(data)
                     pub.publish(msg)
@@ -124,7 +126,7 @@ def start_node(ip_address, port, topic):
     global pub
 
     # Multiple nodes may be running, but only one should operate on each topic
-    rospy.init_node("network_communication_server", anonymous = True)
+    rospy.init_node("network_communication_server", anonymous = True, log_level = rospy.DEBUG)
 
     # Detect message type
     topic_info = rostopic.get_topic_class(topic)
@@ -134,6 +136,7 @@ def start_node(ip_address, port, topic):
         # Register a publisher
         pub = rospy.Publisher(topic, topic_info[0], queue_size = 1)
         message_class = topic_info[0]
+        rospy.logdebug("Creating publisher to topic '%s' with message type '%s'", topic, topic_info[0])
     else:
         rospy.logerr("Target topic is not currently active.")
         return

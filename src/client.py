@@ -48,6 +48,8 @@ def callback_client(data):
     """
     global client_data
 
+    rospy.logdebug("callback_client: Received data")
+
     a = StringIO.StringIO()
     data.serialize(a)
 
@@ -76,6 +78,7 @@ def run_client(ip_address, port):
     try:
         while thread_run:
             if len(client_data) > 0:
+                rospy.logdebug("thread: Sending data")
                 sock.sendall(client_data.pop(0))
 
             time.sleep(0.01)
@@ -93,7 +96,7 @@ def start_node(ip_address, port, topic):
     global thread_run
 
     # Multiple nodes may be running, but only one should operate on each topic
-    rospy.init_node("network_communication_client", anonymous = True)
+    rospy.init_node("network_communication_client", anonymous = True, log_level = rospy.DEBUG)
 
     # Detect message type
     topic_info = rostopic.get_topic_class(topic)
@@ -102,6 +105,7 @@ def start_node(ip_address, port, topic):
     if topic_info and topic_info[0]:
         # Register a callback
         rospy.Subscriber(topic, topic_info[0], callback_client)
+        rospy.logdebug("Subscribing to topic '%s' with message type '%s'", topic, topic_info[0])
     else:
         rospy.logerr("Target topic is not currently active.")
         return
