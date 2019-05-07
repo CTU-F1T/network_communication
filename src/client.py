@@ -11,6 +11,9 @@ import sys
 # ROS python package
 import rospy
 
+# ROS library python package
+import roslib
+
 # ROS topic python package
 import rostopic
 
@@ -91,7 +94,7 @@ def run_client(ip_address, port):
 # Functions
 ######################
 
-def start_node(ip_address, port, topic):
+def start_node(ip_address, port, topic, message_type = None):
     """Starts a ROS node, registers the callbacks."""
     global thread_run
 
@@ -103,12 +106,26 @@ def start_node(ip_address, port, topic):
 
     # Check if something was received and if class was detected
     if topic_info and topic_info[0]:
-        # Register a callback
-        rospy.Subscriber(topic, topic_info[0], callback_client)
-        rospy.logdebug("Subscribing to topic '%s' with message type '%s'", topic, topic_info[0])
+        message_class = topic_info[0]
+    elif message_type:
+        rospy.logwarn("Falling back to creating topic.")
+        # Obtain message class
+        try:
+            message_class = roslib.message.get_message_class(message_type)
+        except Exception as e:
+            rospy.logerr("%s" % e)
+            return
+
+        if not message_class:
+            rospy.logerr("Specified message type '%s' does not exist. Do not forget that this is case sensitive!" % message_type)
+            return
     else:
-        rospy.logerr("Target topic is not currently active.")
+        rospy.logerr("Unable to detect message type, because target topic is not currently active. Add it as another parameter to automatically create the topic.")
         return
+
+    # Register a callback
+    rospy.Subscriber(topic, message_class, callback_client)
+    rospy.logdebug("Subscribing to topic '%s' with message type '%s'", topic, message_class._type)
 
     # Create client thread
     t = threading.Thread(target = run_client, args = [ip_address, port])
@@ -121,10 +138,12 @@ def start_node(ip_address, port, topic):
 
 
 if __name__ == '__main__':
-    args = [ a.lower() for a in rospy.myargv(argv = sys.argv) ]
+    args = rospy.myargv(argv = sys.argv)
 
     # Slightly ugly, but efficient solution
-    if len(args) > 3:
+    if len(args) == 4:
         start_node(args[1], args[2], args[3])
+    elif len(args) > 4:
+        start_node(args[1], args[2], args[3], args[4])
     else:
-        print >>sys.stderr, "Error during starting up the node. Expected 3 parameters (IP address, port, topic), but received %d." % len(args)
+        print >>sys.stderr, "Error during starting up the node. Expected 3 parameters (IP address, port, topic, [message type]), but received %d." % len(args)
