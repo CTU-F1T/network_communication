@@ -34,7 +34,7 @@ from std_msgs.msg import String
 
 
 # Global variables
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock = None
 thread_run = True
 client_data = []
 
@@ -71,23 +71,31 @@ def run_client(ip_address, port):
     # Bind socket to port
     rospy.loginfo("Starting up the client to %s:%s." % (ip_address, port))
 
-    try:
-        sock.connect((ip_address, int(port)))
-    except:
-        rospy.logerr("Connecting to server failed. Is it running?")
-        rospy.loginfo("Closing down the client.")
-        return
+    while thread_run:
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect((ip_address, int(port)))
+        except:
+            rospy.logerr("Connecting to server failed. Is it running?")
+            rospy.loginfo("Closing down the client.")
+            return
 
-    try:
-        while thread_run:
-            if len(client_data) > 0:
-                rospy.logdebug("thread: Sending data")
-                sock.sendall(client_data.pop(0))
+        rospy.loginfo("Connection established.")
 
-            time.sleep(0.01)
-    finally:
-        sock.close()
-        rospy.loginfo("Closing down the client.")
+        try:
+            while thread_run:
+                if len(client_data) > 0:
+                    rospy.logdebug("thread: Sending data")
+                    sock.sendall(client_data.pop(0))
+
+                time.sleep(0.01)
+        except Exception as e:
+            rospy.logerr(e)
+            rospy.logwarn("Resetting socket.")
+        finally:
+            sock.close()
+
+    rospy.loginfo("Closing down the client.")
 
 
 ######################
