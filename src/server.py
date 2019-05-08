@@ -131,7 +131,8 @@ def start_node(ip_address, port, topic, buflen = 128, message_type = None):
     rospy.logdebug("Creating publisher to topic '%s' with message type '%s'", topic, message_class._type)
 
     # Create server thread
-    t = threading.Thread(target = run_server, args = [ip_address, port, buflen])
+    # TODO: Check if buflen is integer
+    t = threading.Thread(target = run_server, args = [ip_address, port, int(buflen)])
     t.start()
 
     # Function spin() simply keeps python from exiting until this node is stopped.
