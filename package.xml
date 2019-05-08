@@ -17,6 +17,8 @@
 
   <!-- run_depend libraries -->
   <run_depend>rospy</run_depend>
+  <run_depend>roslib</run_depend>
+  <run_depend>rostopic</run_depend>
 
   <!-- run_depend message types -->
 </package>
