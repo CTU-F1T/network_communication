@@ -80,6 +80,8 @@ def run_server(ip_address, port, buflen):
                     msg = message_class()
                     msg.deserialize(data)
                     pub.publish(msg)
+            except Exception as e:
+                rospy.logwarn(e)
             finally:
                 connection.close()
                 rospy.loginfo("Closed connection.")
