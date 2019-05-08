@@ -27,11 +27,6 @@ import threading
 import time
 import StringIO
 
-# Message types
-# String
-from std_msgs.msg import String
-#: string data
-
 
 # Global variables
 sock = None

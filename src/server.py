@@ -26,11 +26,6 @@ import threading
 # Thread sleep
 import time
 
-# Message types
-# String
-from std_msgs.msg import String
-#: string data
-
 
 # Publishers
 pub = None
