@@ -97,7 +97,7 @@ def start_node(ip_address, port, topic, buflen = 128, message_type = None):
     global pub
 
     # Multiple nodes may be running, but only one should operate on each topic
-    rospy.init_node("network_communication_server", anonymous = True, log_level = rospy.DEBUG)
+    rospy.init_node("network_communication_server", anonymous = True)#, log_level = rospy.DEBUG)
 
     # Detect message type
     topic_info = rostopic.get_topic_class(topic)
