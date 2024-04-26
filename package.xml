@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
-<package>
+<?xml-model
+  href="http://download.ros.org/schema/package_format3.xsd"
+  schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
   <name>network_communication</name>
   <version>0.0.1</version>
   <description>
@@ -14,18 +17,22 @@
      - A: client.py 192.168.1.3 22222 /scan sensor_msgs/LaserScan
   </description>
 
-  <maintainer email="klapajar@fel.cvut.cz">Jaroslav Klapálek</maintainer>
+  <maintainer email="f1tenth@rtime.felk.cvut.cz">F1tenth CTU Community</maintainer>
 
   <license>TODO</license>
 
   <author email="klapajar@fel.cvut.cz">Jaroslav Klapálek</author>
 
+  <url type="repository">https://github.com/CTU-F1T/network_communication</url>
+
   <buildtool_depend>catkin</buildtool_depend>
 
-  <!-- run_depend libraries -->
-  <run_depend>rospy</run_depend>
-  <run_depend>roslib</run_depend>
-  <run_depend>rostopic</run_depend>
+  <!-- build_depend libraries -->
 
-  <!-- run_depend message types -->
+  <!-- exec_depend libraries -->
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>roslib</exec_depend>
+  <exec_depend>rostopic</exec_depend>
+
+  <!-- exec_depend message types -->
 </package>
